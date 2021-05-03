@@ -24,7 +24,7 @@ namespace ProductManagement.Infrastructure.Repositories
 
         public Product Add(Product product)
         {
-            return _context.Products.Add(product);
+            return _context.Products.Add(product).Entity;
         }
     }
 }
