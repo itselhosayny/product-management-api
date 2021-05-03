@@ -32,7 +32,7 @@ namespace ProductManagement.API.Controllers
 
         // POST: api/Products
         [HttpPost]
-        public async Task<ActionResult<ProductDto>> PostProduct(ProductDto product)
+        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
         {
             if(!ModelState.IsValid)
             {
