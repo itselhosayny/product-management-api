@@ -36,9 +36,10 @@ namespace ProductManagement.API.Controllers
             var createdProduct = _unitOfWork.ProductRepository.Add(Mapper.MapFrom(product));
             await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = createdProduct.Id }, createdProduct);
+            return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
         }
 
+        // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
@@ -52,6 +53,5 @@ namespace ProductManagement.API.Controllers
             return product;
         }
 
-        
     }
 }
