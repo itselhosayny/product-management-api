@@ -1,14 +1,8 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProductManagement.Domain.Repositories;
 using ProductManagement.Domain.UOW;
 using ProductManagement.Domain.Validation;
-using ProductManagement.Infrastructure.Repositories;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

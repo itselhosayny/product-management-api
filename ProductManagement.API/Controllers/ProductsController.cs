@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using ProductManagement.API.Dto;
 using ProductManagement.API.Helper;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.UOW;
 using ProductManagement.Domain.Validation;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProductManagement.API.Controllers

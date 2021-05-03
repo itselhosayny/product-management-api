@@ -5,11 +5,6 @@ using ProductManagement.Domain.Repositories;
 using ProductManagement.Domain.UOW;
 using ProductManagement.Infrastructure.Repositories;
 using ProductManagement.Infrastructure.UOW;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProductManagement.Infrastructure
 {

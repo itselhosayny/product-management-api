@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductManagement.Infrastructure.Repositories
