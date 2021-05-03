@@ -1,4 +1,5 @@
-﻿using ProductManagement.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,14 @@ namespace ProductManagement.Infrastructure.Repositories
             _context = context;
         }
 
-        public IQueryable<Product> GetAll()
+        public async Task<List<Product>> GetAllAsync()
         {
-            return _context.Products;
+            return await _context.Products.ToListAsync();
+        }
+
+        public async Task<Product> GetAsync(int id)
+        {
+            return await _context.Products.FindAsync(id);
         }
 
         public Product Add(Product product)

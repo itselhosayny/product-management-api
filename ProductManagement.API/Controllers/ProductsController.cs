@@ -22,6 +22,13 @@ namespace ProductManagement.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // GET: api/Products
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            return await _unitOfWork.ProductRepository.GetAllAsync();
+        }
+
         // POST: api/Products
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto product)
@@ -33,9 +40,16 @@ namespace ProductManagement.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            return null;
+            var product = await _unitOfWork.ProductRepository.GetAsync(id);
+
+            if(product == null)
+            {
+                return NotFound();
+            }
+
+            return product;
         }
 
         

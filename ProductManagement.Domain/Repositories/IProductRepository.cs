@@ -9,7 +9,8 @@ namespace ProductManagement.Domain.Repositories
 {
     public interface IProductRepository
     {
-        IQueryable<Product> GetAll();
+        Task<List<Product>> GetAllAsync();
+        Task<Product> GetAsync(int id);
         Product Add(Product product);
     }
 }
