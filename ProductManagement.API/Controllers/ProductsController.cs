@@ -4,6 +4,7 @@ using ProductManagement.API.Dto;
 using ProductManagement.API.Helper;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.UOW;
+using ProductManagement.Domain.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,17 @@ namespace ProductManagement.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDto>> PostProduct(ProductDto product)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             var createdProduct = _unitOfWork.ProductRepository.Add(Mapper.MapFrom(product));
-            await _unitOfWork.SaveChangesAsync();
+            var result = await _unitOfWork.SaveChangesAsync();
+            if(result.Status == Status.Failure)
+            {
+                return BadRequest();
+            }
 
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
         }

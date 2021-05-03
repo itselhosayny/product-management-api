@@ -1,8 +1,12 @@
-﻿using ProductManagement.Domain.Repositories;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using ProductManagement.Domain.Repositories;
 using ProductManagement.Domain.UOW;
+using ProductManagement.Domain.Validation;
 using ProductManagement.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,9 +26,20 @@ namespace ProductManagement.Infrastructure.UOW
             ProductRepository = productRepository;
         }
 
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public async Task<Result> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _context.SaveChangesAsync(cancellationToken);
+                return Result.Success();
+
+            }catch(DbUpdateException ex)
+            {
+                if (ex.InnerException.Message.Contains("IX_Products_Code"))
+                    return Result.Failure("Code is already taken");
+
+                throw;
+            }
         }
 
         public void Dispose()

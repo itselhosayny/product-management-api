@@ -1,4 +1,5 @@
 ﻿using ProductManagement.Domain.Repositories;
+using ProductManagement.Domain.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace ProductManagement.Domain.UOW
 {
     public interface IUnitOfWork
     {
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<Result> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         IProductRepository ProductRepository { get; } 
     }

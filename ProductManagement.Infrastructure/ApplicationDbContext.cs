@@ -17,5 +17,14 @@ namespace ProductManagement.Infrastructure
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Product>(entity => {
+                entity.HasIndex(e => e.Code).IsUnique();
+            });
+
+        }
     }
 }
