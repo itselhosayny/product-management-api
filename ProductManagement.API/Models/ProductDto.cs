@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ProductManagement.API.Dto
+namespace ProductManagement.API.Models
 {
     public class ProductDto : IValidatableObject
     {

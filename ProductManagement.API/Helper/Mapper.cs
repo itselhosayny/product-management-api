@@ -1,4 +1,4 @@
-﻿using ProductManagement.API.Dto;
+﻿using ProductManagement.API.Models;
 using ProductManagement.Domain.Entities;
 
 namespace ProductManagement.API.Helper

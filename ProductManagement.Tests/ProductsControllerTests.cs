@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using ProductManagement.API.Controllers;
-using ProductManagement.API.Dto;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.Repositories;
 using ProductManagement.Domain.UOW;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ProductManagement.API.Models;
 using Xunit;
 
 namespace ProductManagement.Tests

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProductManagement.API.Dto;
 using ProductManagement.API.Helper;
 using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.UOW;
@@ -7,6 +6,7 @@ using ProductManagement.Domain.Validation;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using ProductManagement.API.Models;
 
 namespace ProductManagement.API.Controllers
 {
