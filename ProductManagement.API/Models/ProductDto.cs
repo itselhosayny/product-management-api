@@ -17,7 +17,7 @@ namespace ProductManagement.API.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if(DateFinValidation < DateDebutValidation)
+            if(DateFinValidation <= DateDebutValidation)
             {
                 yield return new ValidationResult($"{nameof(DateFinValidation)} must be greater than {nameof(DateDebutValidation)}");
             }
