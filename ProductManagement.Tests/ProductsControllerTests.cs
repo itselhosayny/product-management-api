@@ -17,19 +17,35 @@ namespace ProductManagement.Tests
 {
     public class ProductsControllerTests
     {
+        private readonly ProductsController _sut;
+        private readonly Mock<IProductRepository> _productRepositoryMock;
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+
+        public ProductsControllerTests()
+        {
+            _productRepositoryMock = new Mock<IProductRepository>();
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+
+            _unitOfWorkMock
+                .SetupGet(uow => uow.ProductRepository)
+                .Returns(_productRepositoryMock.Object);
+
+            _sut = new ProductsController(_unitOfWorkMock.Object);
+        }
+
+
         [Fact]
         public async Task GetProducts_ReturnsActionResult_WithListOfProducts()
         {
+            //Arrange
+            _productRepositoryMock
+                .Setup(repo => repo.GetAllAsync())
+                .ReturnsAsync(TestData.GetTestProducts());
             
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(TestData.GetTestProducts());
-            var mockUow = new Mock<IUnitOfWork>();
-            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
-
-            var controller = new ProductsController(mockUow.Object);
-
-            var actionResult = await controller.GetProducts();
+            //Act
+            var actionResult = await _sut.GetProducts();
             
+            //Assert
             Assert.IsAssignableFrom<ActionResult<IEnumerable<Product>>>(actionResult);
             Assert.Equal(2, actionResult.Value.Count());
         }
@@ -37,13 +53,21 @@ namespace ProductManagement.Tests
         [Fact]
         public async Task PostProduct_ReturnsCreatedAtAction_WhenModelStateIsValid()
         {
+            // Arrange
             var newProductDto = new ProductDto { Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 03), DateFinValidation = new DateTime(2021, 05, 5) };
             var newProduct = new Product { Id = 1, Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 03), DateFinValidation = new DateTime(2021, 05, 5) };
-
-            var controller = new ProductsController(SettingUpUowForPostProduct(newProduct,Status.Success));
             
+            _productRepositoryMock
+                .Setup(repo => repo.Add(It.IsAny<Product>()))
+                .Returns(newProduct);
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(new CancellationToken()))
+                .ReturnsAsync(new Result { Status = Status.Success });
 
-            var actionResult = await controller.PostProduct(newProductDto);
+            // Act
+            var actionResult = await _sut.PostProduct(newProductDto);
+
+            // Assert
             var createdAtActionResult = Assert.IsAssignableFrom<CreatedAtActionResult>(actionResult.Result);
             Assert.Equal(newProduct, createdAtActionResult.Value);
         }
@@ -51,71 +75,68 @@ namespace ProductManagement.Tests
         [Fact]
         public async Task PostProduct_ReturnsBardRequest_WhenModelStateIsNotValid()
         {
+            // Arrange
             var newProductDto = new ProductDto { Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 06), DateFinValidation = new DateTime(2021, 05, 5) };
-            var newProduct = new Product { Id = 1, Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 06), DateFinValidation = new DateTime(2021, 05, 5) };
+            _sut.ModelState.AddModelError("", "error message");
 
-            var controller = new ProductsController(SettingUpUowForPostProduct(newProduct,Status.Success));
-            controller.ModelState.AddModelError("", "error message");
+            // Act
+            var actionResult = await _sut.PostProduct(newProductDto);
 
-            var actionResult = await controller.PostProduct(newProductDto);
+            // Assert
             Assert.IsAssignableFrom<BadRequestResult>(actionResult.Result);
         }
 
         [Fact]
         public async Task PostProduct_ReturnsBardRequest_WhenCodeIsNotUnique()
         {
+            // Arrange
             var newProductDto = new ProductDto { Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 06), DateFinValidation = new DateTime(2021, 05, 5) };
             var newProduct = new Product { Id = 1, Code = "code1", Nom = "product1", DateDebutValidation = new DateTime(2021, 05, 06), DateFinValidation = new DateTime(2021, 05, 5) };
 
-            var controller = new ProductsController(SettingUpUowForPostProduct(newProduct, Status.Failure));
+            _productRepositoryMock
+                .Setup(repo => repo.Add(It.IsAny<Product>()))
+                .Returns(newProduct);
+            _unitOfWorkMock
+                .Setup(uow => uow.SaveChangesAsync(new CancellationToken()))
+                .ReturnsAsync(new Result { Status = Status.Failure });
 
-            var actionResult = await controller.PostProduct(newProductDto);
-            var badRequestRest = Assert.IsAssignableFrom<BadRequestResult>(actionResult.Result);
+            // Act
+            var actionResult = await _sut.PostProduct(newProductDto);
+
+            // Assert
+            Assert.IsAssignableFrom<BadRequestResult>(actionResult.Result);
         }
 
         [Fact]
         public async Task GetProduct_ReturnsNotFound_WhenProductNotExists()
         {
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo
+            // Arrange
+            _productRepositoryMock
                 .Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult<Product>(null));
-            var mockUow = new Mock<IUnitOfWork>();
-            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
 
-            var controller = new ProductsController(mockUow.Object);
+            // Act
+            var actionResult = await _sut.GetProduct(1);
 
-            var actionResult = await controller.GetProduct(1);
+            // Assert
             Assert.IsAssignableFrom<NotFoundResult>(actionResult.Result);
         }
 
         [Fact]
         public async Task GetProduct_ReturnsOk_WhenProductExists()
         {
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo
+            // Arrange
+            _productRepositoryMock
                 .Setup(repo => repo.GetAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(TestData.GetTestProducts().First()));
-            var mockUow = new Mock<IUnitOfWork>();
-            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
 
-            var controller = new ProductsController(mockUow.Object);
+            // Act
+            var actionResult = await _sut.GetProduct(1);
 
-            var actionResult = await controller.GetProduct(1);
+            // Assert
             Assert.IsAssignableFrom<OkObjectResult>(actionResult.Result);
         }
 
-        private IUnitOfWork SettingUpUowForPostProduct(Product productToAdd,Status resultStatus)
-        {
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(repo => repo.Add(It.IsAny<Product>())).Returns(productToAdd);
-            var mockUow = new Mock<IUnitOfWork>();
-            mockUow.Setup(uow => uow.SaveChangesAsync(new CancellationToken())).ReturnsAsync(new Result { Status = resultStatus });
-            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
 
-            return mockUow.Object;
-        }
-
-        
     }
 }
