@@ -73,6 +73,38 @@ namespace ProductManagement.Tests
             var badRequestRest = Assert.IsAssignableFrom<BadRequestResult>(actionResult.Result);
         }
 
+        [Fact]
+        public async Task GetProduct_ReturnsNotFound_WhenProductNotExists()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo
+                .Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult<Product>(null));
+            var mockUow = new Mock<IUnitOfWork>();
+            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
+
+            var controller = new ProductsController(mockUow.Object);
+
+            var actionResult = await controller.GetProduct(1);
+            Assert.IsAssignableFrom<NotFoundResult>(actionResult.Result);
+        }
+
+        [Fact]
+        public async Task GetProduct_ReturnsOk_WhenProductExists()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            mockRepo
+                .Setup(repo => repo.GetAsync(It.IsAny<int>()))
+                .Returns(Task.FromResult(TestData.GetTestProducts().First()));
+            var mockUow = new Mock<IUnitOfWork>();
+            mockUow.SetupGet(uow => uow.ProductRepository).Returns(mockRepo.Object);
+
+            var controller = new ProductsController(mockUow.Object);
+
+            var actionResult = await controller.GetProduct(1);
+            Assert.IsAssignableFrom<OkObjectResult>(actionResult.Result);
+        }
+
         private IUnitOfWork SettingUpUowForPostProduct(Product productToAdd,Status resultStatus)
         {
             var mockRepo = new Mock<IProductRepository>();

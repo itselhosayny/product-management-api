@@ -21,6 +21,7 @@ namespace ProductManagement.API.Dto
             {
                 yield return new ValidationResult($"{nameof(DateFinValidation)} must be greater than {nameof(DateDebutValidation)}");
             }
+
         }
     }
 }

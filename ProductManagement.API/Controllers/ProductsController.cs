@@ -5,6 +5,7 @@ using ProductManagement.Domain.Entities;
 using ProductManagement.Domain.UOW;
 using ProductManagement.Domain.Validation;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ProductManagement.API.Controllers
@@ -22,6 +23,7 @@ namespace ProductManagement.API.Controllers
 
         // GET: api/Products
         [HttpGet]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
             return await _unitOfWork.ProductRepository.GetAllAsync();
@@ -29,6 +31,8 @@ namespace ProductManagement.API.Controllers
 
         // POST: api/Products
         [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult<Product>> PostProduct(ProductDto product)
         {
             if(!ModelState.IsValid)
@@ -48,6 +52,8 @@ namespace ProductManagement.API.Controllers
 
         // GET: api/Products/5
         [HttpGet("{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetAsync(id);
@@ -57,7 +63,7 @@ namespace ProductManagement.API.Controllers
                 return NotFound();
             }
 
-            return product;
+            return Ok(product);
         }
 
     }
